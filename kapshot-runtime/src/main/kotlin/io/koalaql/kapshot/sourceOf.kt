@@ -13,7 +13,8 @@ private fun sourceOf(annotations: List<Annotation>, name: () -> String): Source 
 
     return Source(
         location = parseLocation(anno.location),
-        text = anno.text
+        text = anno.text,
+        resourcePath = anno.resourcePath
     )
 }
 

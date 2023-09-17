@@ -30,9 +30,10 @@ fun parseLocation(location: String): SourceLocation {
 fun <T : Capturable<T>> addSourceToBlock(
     block: Capturable<T>,
     location: String,
-    source: String
+    source: String,
+    resourcePath: String
 ): T {
     return block.withSource(
-        Source(parseLocation(location), source)
+        Source(parseLocation(location), source, resourcePath)
     )
 }

@@ -18,6 +18,12 @@ class CliProcessor: CommandLineProcessor {
             valueDescription = "path",
             description = "root project path",
             required = false,
+        ),
+        CliOption(
+            optionName = "extractedDir",
+            valueDescription = "path",
+            description = "path to extract kt/js fragments to",
+            required = true,
         )
     )
 
@@ -28,6 +34,7 @@ class CliProcessor: CommandLineProcessor {
     ) {
         return when (option.optionName) {
             "projectDir" -> configuration.put(PROJECT_DIR_KEY, value)
+            "extractedDir" -> configuration.put(EXTRACTED_DIR_KEY, value)
             else -> throw IllegalArgumentException("Unexpected config option ${option.optionName}")
         }
     }

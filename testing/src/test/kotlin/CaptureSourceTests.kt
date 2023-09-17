@@ -43,18 +43,22 @@ class CaptureSourceTests {
         assertEquals(329, location.to.char)
         assertEquals(14, location.to.line)
         assertEquals(5, location.to.column)
+
+        assertEquals("", source.resourcePath)
     }
 
     @Test
     fun `capture nested class source`() {
+        val source = sourceOf<TestClass.Nested>()
         assertEquals(
             """
             class Nested {
                 val test get() = "nest"
             }
             """.trimIndent(),
-            sourceOf<TestClass.Nested>().text
+            source.text
         )
+        assertEquals("", source.resourcePath)
     }
 
     private val capMethodSourceSource = """
@@ -65,14 +69,18 @@ class CaptureSourceTests {
             fun five() = 5
         }
 
+        val source1 = sourceOf(::`capture method source`)
         assertEquals(
             capMethodSourceSource,
-            sourceOf(::`capture method source`).text
+            source1.text
         )
+        assertEquals("", source1.resourcePath)
 
+        val source2 = sourceOf(Inner::five)
         assertEquals(
-            "fun five() = 5", sourceOf(Inner::five).text
+            "fun five() = 5", source2.text
         )
+        assertEquals("", source2.resourcePath)
     }
     """.trimIndent()
 
@@ -84,14 +92,18 @@ class CaptureSourceTests {
             fun five() = 5
         }
 
+        val source1 = sourceOf(::`capture method source`)
         assertEquals(
             capMethodSourceSource,
-            sourceOf(::`capture method source`).text
+            source1.text
         )
+        assertEquals("", source1.resourcePath)
 
+        val source2 = sourceOf(Inner::five)
         assertEquals(
-            "fun five() = 5", sourceOf(Inner::five).text
+            "fun five() = 5", source2.text
         )
+        assertEquals("", source2.resourcePath)
     }
 
     @CaptureSource
@@ -115,24 +127,29 @@ class CaptureSourceTests {
 
     @Test
     fun `capture assorted declarations`() {
+        val source1 = sourceOf<CapturedInterface>()
         assertEquals(
             """
             interface CapturedInterface {
                 fun type() = "interface"
             }
             """.trimIndent(),
-            sourceOf<CapturedInterface>().text
+            source1.text
         )
+        assertEquals("", source1.resourcePath)
 
+        val source2 = sourceOf<CapturedObj>()
         assertEquals(
             """
             object CapturedObj {
                 val test = "123"
             }
             """.trimIndent(),
-            sourceOf<CapturedObj>().text
+            source2.text
         )
+        assertEquals("", source2.resourcePath)
 
+        val source3 = sourceOf<CapturedSealed>()
         assertEquals(
             """
             sealed class CapturedSealed {
@@ -143,15 +160,18 @@ class CaptureSourceTests {
                 companion object { }
             }
             """.trimIndent(),
-            sourceOf<CapturedSealed>().text
+            source3.text
         )
+        assertEquals("", source3.resourcePath)
 
+        val source4 = sourceOf<CapturedSealed.Companion>()
         assertEquals(
             """
                 companion object { }
             """.trimIndent(),
-            sourceOf<CapturedSealed.Companion>().text
+            source4.text
         )
+        assertEquals("", source4.resourcePath)
     }
 
     @CaptureSource
@@ -164,20 +184,24 @@ class CaptureSourceTests {
 
     @Test
     fun `can capture source of valvars`() {
+        val source1 = sourceOf(::someVal)
         assertEquals(
             """
                 @Transient /* test this annotation is present in source */
                 private val someVal = 5
             """.trimIndent(),
-            sourceOf(::someVal).text
+            source1.text
         )
+        assertEquals("", source1.resourcePath)
 
+        val source2 = sourceOf(::someVar)
         assertEquals(
             """
                 private var someVar: Int get() = 10
                     set(value) { }
             """.trimIndent(),
-            sourceOf(::someVar).text
+            source2.text
         )
+        assertEquals("", source2.resourcePath)
     }
 }

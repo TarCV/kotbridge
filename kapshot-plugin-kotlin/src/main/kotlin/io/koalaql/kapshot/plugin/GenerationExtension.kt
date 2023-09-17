@@ -12,6 +12,7 @@ import java.nio.file.Path
 class GenerationExtension(
     private val messages: MessageCollector,
     private val projectDir: Path,
+    private val extractedTargetDir: Path,
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val addSourceToBlock = pluginContext
@@ -25,6 +26,7 @@ class GenerationExtension(
             CaptureTransformer(
                 pluginContext,
                 projectDir,
+                extractedTargetDir,
                 addSourceToBlock
             ),
             null

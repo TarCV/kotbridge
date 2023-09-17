@@ -30,12 +30,21 @@ class GradlePlugin : KotlinCompilerPluginSupportPlugin {
         kotlinCompilation: KotlinCompilation<*>
     ): Provider<List<SubpluginOption>> {
         val project = kotlinCompilation.target.project
+        val extractionDir = project.buildDir
+            .resolve("generated")
+            .resolve("kotbridge")
+            .resolve(kotlinCompilation.name)
+            .resolve("kjs")
+        // TODO: Remove files related to deleted fragments while not breaking incremental build
 
+        kotlinCompilation.compileTaskProvider.configure { 
+            it.outputs.dir(extractionDir)
+        }
         return project.provider {
-            listOf(SubpluginOption(
-                "projectDir",
-                project.projectDir.path
-            ))
+            listOf(
+                SubpluginOption("projectDir", project.projectDir.path),
+                SubpluginOption("extractedDir", extractionDir.path),
+            )
         }
     }
 }

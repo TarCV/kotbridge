@@ -7,5 +7,6 @@ package io.koalaql.kapshot
 )
 annotation class CaptureSource(
     val location: String = "",
-    val text: String = ""
+    val text: String = "",
+    val resourcePath: String = ""
 )

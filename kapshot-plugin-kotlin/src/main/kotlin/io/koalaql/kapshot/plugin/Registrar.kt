@@ -16,7 +16,8 @@ class Registrar: CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         IrGenerationExtension.registerExtension(GenerationExtension(
             configuration.getNotNull(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY),
-            Path(configuration.getNotNull(PROJECT_DIR_KEY))
+            Path(configuration.getNotNull(PROJECT_DIR_KEY)),
+            Path(configuration.getNotNull(EXTRACTED_DIR_KEY))
         ))
     }
 }

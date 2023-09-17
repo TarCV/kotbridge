@@ -13,7 +13,7 @@ java {
 
 publishing {
     publications {
-        create<MavenPublication>("kapshot") {
+        create<MavenPublication>("kotbridge") {
             from(components["java"])
 
             artifactId = project.name
@@ -28,28 +28,26 @@ publishing {
             }
 
             pom {
-                name.set("Kapshot")
-                description.set("Source code capture plugin")
-                url.set("https://kapshot.koalaql.io")
+                name.set("kotbridge")
 
                 licenses {
                     license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
+                        name.set("Apache License")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
                     }
                 }
 
                 developers {
                     developer {
-                        name.set("Damien O'Hara")
-                        url.set("https://github.com/mfwgenerics")
+                        name.set("TarCV")
+                        url.set("https://github.com/TarCV")
                     }
                 }
 
                 scm {
-                    connection.set("scm:git@github.com:mfwgenerics/kapshot.git")
-                    developerConnection.set("scm:git@github.com:mfwgenerics/kapshot.git")
-                    url.set("https://github.com/mfwgenerics/kapshot")
+                    connection.set("scm:git@github.com:TarCV/kotbridge.git")
+                    developerConnection.set("scm:git@github.com:TarCV/kotbridge.git")
+                    url.set("https://github.com/TarCV/kotbridge")
                 }
             }
         }
@@ -61,7 +59,7 @@ publishing {
             System.getenv("GPG_PRIVATE_PASSWORD")
         )
 
-        sign(publishing.publications["kapshot"])
+        sign(publishing.publications["kotbridge"])
     }
 
     repositories {
