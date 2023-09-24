@@ -8,6 +8,7 @@ import org.openqa.selenium.ScriptKey
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.w3c.dom.asList
 import org.w3c.dom.querySelectorAll
@@ -74,7 +75,7 @@ class SeleniumDemoTests {
     }
 
     @Test
-    fun readColumnTexts(): Unit = ChromeDriver().runAndQuit {
+    fun readColumnTexts(): Unit = ChromeDriver(ChromeOptions().addArguments("--headless=new")).runAndQuit {
         (1..10).map {
             listOf(
                 "KtJs comparable" to assertAndMeasure { cells ->
