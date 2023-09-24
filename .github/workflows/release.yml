@@ -25,7 +25,7 @@ jobs:
     needs: staging_repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Configure JDK
         uses: actions/setup-java@v1
         with:
