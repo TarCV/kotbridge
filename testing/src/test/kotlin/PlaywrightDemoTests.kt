@@ -5,10 +5,10 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import io.koalaql.kapshot.Capturable
+import io.koalaql.kapshot.Converters
 import io.koalaql.kapshot.Source
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
-import org.w3c.dom.ItemArrayLike
 import org.w3c.dom.asList
 import org.w3c.dom.querySelectorAll
 import java.util.stream.Collectors
@@ -16,8 +16,20 @@ import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
+private const val CONVERTER_SUFFIX = "ConverterPlay"
 class PlaywrightDemoTests {
+    @Suppress("ConvertToStringTemplate") // this tests constant expressions work as annotation arguments:
+    @Converters(toJsConverter = "t" + 0 + "Js" + CONVERTER_SUFFIX, fromJsConverter = "fr${0}mJs${CONVERTER_SUFFIX}")
+    fun interface CapturedBlock0<R>: Capturable<CapturedBlock0<R>> {
+        operator fun invoke(): R
+
+        override fun withSource(source: Source): CapturedBlock0<R> = object : CapturedBlock0<R> by this {
+            override val source = source
+        }
+    }
+
+    @Suppress("ConvertToStringTemplate") // this tests constant expressions work as annotation arguments:
+    @Converters(toJsConverter = "t" + 0 + "Js" + CONVERTER_SUFFIX, fromJsConverter = "fr${0}mJs${CONVERTER_SUFFIX}")
     fun interface CapturedBlock1<T, R> : Capturable<CapturedBlock1<T, R>> {
         operator fun invoke(arg: T): R
 
@@ -26,55 +38,35 @@ class PlaywrightDemoTests {
         }
     }
 
+    fun <R> Page.evaluateKtJs(block: CapturedBlock0<R>): R {
+        @Suppress("ConstantConditionIf")
+        if (false) { // Catch type issues
+            block()
+        }
+
+        val runnableJs = prepareRunnableJs(block.source)
+        val seleniumResult = evaluate(runnableJs)
+        @Suppress("UNCHECKED_CAST")
+        return seleniumResult as R
+    }
+
     fun <T, R> Page.evaluateKtJs(arg: T, block: CapturedBlock1<T, R>): R {
         @Suppress("ConstantConditionIf")
         if (false) { // Catch type issues
             block(arg)
         }
 
-        val runnableJs = prepareRunnableJs(block)
+        val runnableJs = prepareRunnableJs(block.source)
         val seleniumResult = evaluate(runnableJs, arg)
-        return convertJsResult(seleniumResult)
-    }
-
-    fun <R> Page.evalKtJsOnSelectorAll(selector: String, block: CapturedBlock1<ItemArrayLike<org.w3c.dom.Element>, R>): R {
-        val runnableJs = prepareRunnableJs(block)
-        val seleniumResult = evalOnSelectorAll(selector, runnableJs)
-        return convertJsResult(seleniumResult)
-    }
-
-    private fun <T, R> prepareRunnableJs(block: CapturedBlock1<T, R>): String {
-        val resourcePath = block.source.resourcePath.apply {
-            require(isNotEmpty()) { "Failed to find compiled source for the fragment" }
-        }
-
-        val moduleJs = this@PlaywrightDemoTests::class.java.getResourceAsStream(resourcePath)
-            .run {
-                requireNotNull(this) { "Failed to read the compiled fragment $resourcePath" }
-            }
-            .bufferedReader()
-            .use {
-                it.readText()
-            }
-        val fragmentName = resourcePath.removeSuffix(".js")
-        @Language("JavaScript") val runnableJs = """
-                            arguments => {
-                                const e = {};
-                                (function () { $moduleJs }).call(e);
-                                return e["$fragmentName"].entrypoint(arguments);
-                            }
-                            """.trimIndent()
-        return runnableJs
-    }
-
-    private fun <T> convertJsResult(seleniumResult: Any?): T {
-        val result = if (seleniumResult is List<*>) {
-            seleniumResult.toTypedArray()
-        } else {
-            seleniumResult
-        }
         @Suppress("UNCHECKED_CAST")
-        return result as T
+        return seleniumResult as R
+    }
+
+    fun <R> Page.evalKtJsOnSelectorAll(selector: String, block: CapturedBlock1<List<org.w3c.dom.Element>, R>): R {
+        val runnableJs = prepareRunnableJs(block.source)
+        val seleniumResult = evalOnSelectorAll(selector, runnableJs)
+        @Suppress("UNCHECKED_CAST")
+        return seleniumResult as R
     }
 
     @Test
@@ -84,27 +76,22 @@ class PlaywrightDemoTests {
                 listOf(
                     "KtJs map(textContent)" to browser.assertAndMeasure {page, _, cells ->
                         page.evaluateKtJs(cells) { e ->
-                            (e as Array<org.w3c.dom.Element>)
-                                .map { it.textContent }
-                                .toTypedArray()
-                        }.toList()
+                            e.map { it.asNode().textContent ?: "" }
+                        }
                     },
 
                     "KtJs evalOnSelectorAll" to browser.assertAndMeasure { page, _, _ ->
                         page.evalKtJsOnSelectorAll(".column-15") { e ->
-                            (e as Array<org.w3c.dom.Element>)
-                                .map { it.textContent }
-                                .toTypedArray()
-                        }.toList()
+                            e.map { it.textContent ?: "" }
+                        }
                     },
 
                     "KtJs querySelectorAll" to browser.assertAndMeasure { page, _, _ ->
-                        page.evaluateKtJs(null) { _ ->
+                        page.evaluateKtJs {
                             kotlinx.browser.document.querySelectorAll(".column-15")
                                 .asList()
-                                .map { it.textContent }
-                                .toTypedArray()
-                        }.toList()
+                                .map { it.textContent ?: "" }
+                        }
                     },
 
                     "Playwright map(textContent)" to browser.assertAndMeasure { _, _, cells ->
@@ -146,5 +133,29 @@ class PlaywrightDemoTests {
         )
         assertTrue(result.all { it.endsWith("15") }, "Unexpected values: $result")
         return time
+    }
+
+    private fun prepareRunnableJs(source: Source): String {
+        val resourcePath = source.resourcePath.apply {
+            require(isNotEmpty()) { "Failed to find compiled source for the fragment" }
+        }
+
+        val moduleJs = this@PlaywrightDemoTests::class.java.getResourceAsStream(resourcePath)
+            .run {
+                requireNotNull(this) { "Failed to read the compiled fragment $resourcePath" }
+            }
+            .bufferedReader()
+            .use {
+                it.readText()
+            }
+        val fragmentName = resourcePath.removeSuffix(".js")
+        @Language("JavaScript") val runnableJs = """
+                            arguments => {
+                                const e = {};
+                                (function () { $moduleJs }).call(e);
+                                return e["$fragmentName"].entrypoint(arguments);
+                            }
+                            """.trimIndent()
+        return runnableJs
     }
 }

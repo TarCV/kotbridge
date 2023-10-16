@@ -1,4 +1,5 @@
 import io.koalaql.kapshot.Capturable
+import io.koalaql.kapshot.Converters
 import io.koalaql.kapshot.Source
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
@@ -17,7 +18,20 @@ import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private const val CONVERTER_SUFFIX = "ConverterSe"
 class SeleniumDemoTests {
+    @Suppress("ConvertToStringTemplate") // this tests constant expressions work as annotation arguments:
+    @Converters(toJsConverter = "t" + 0 + "Js" + CONVERTER_SUFFIX, fromJsConverter = "fr${0}mJs${CONVERTER_SUFFIX}")
+    fun interface CapturedBlock0<R>: Capturable<CapturedBlock0<R>> {
+        operator fun invoke(): R
+
+        override fun withSource(source: Source): CapturedBlock0<R> = object : CapturedBlock0<R> by this {
+            override val source = source
+        }
+    }
+
+    @Suppress("ConvertToStringTemplate") // this tests constant expressions work as annotation arguments:
+    @Converters(toJsConverter = "t" + 0 + "Js" + CONVERTER_SUFFIX, fromJsConverter = "fr${0}mJs${CONVERTER_SUFFIX}")
     fun interface CapturedBlock1<T, R>: Capturable<CapturedBlock1<T, R>> {
         operator fun invoke(arg: T): R
 
@@ -28,72 +42,47 @@ class SeleniumDemoTests {
 
     private val scriptToPinMap = mutableMapOf<String, ScriptKey>()
 
-    fun <T> WebDriver.executeKtJs(vararg args: Any, block: CapturedBlock1<Array<out Any>, T>): T {
+    fun <R> WebDriver.executeKtJs(block: CapturedBlock0<R>): R {
         @Suppress("ConstantConditionIf")
         if (false) { // Catch type issues
-            block(args)
+            block()
         }
 
-        val resourcePath = block.source.resourcePath.apply {
-            require(isNotEmpty()) { "Failed to find compiled source for the fragment" }
-        }
-
-        this as JavascriptExecutor
-        var pin = scriptToPinMap[resourcePath]
-        pin = if (pin != null && pin in pinnedScripts) {
-            pin
-        } else {
-            println("NOTE: Script $resourcePath is not pinned yet")
-            val moduleJs = this@SeleniumDemoTests::class.java.getResourceAsStream(resourcePath)
-                .run {
-                    requireNotNull(this) { "Failed to read the compiled fragment $resourcePath" }
-                }
-                .bufferedReader()
-                .use {
-                    it.readText()
-                }
-            val fragmentName = resourcePath.removeSuffix(".js")
-            @Language("JavaScript") val runnableJs = """
-                        const e = {};
-                        (function () { $moduleJs }).call(e);
-                        return e["$fragmentName"].entrypoint(arguments)
-                    """.trimIndent()
-
-            val newPin = (this as JavascriptExecutor).pin(runnableJs)
-            scriptToPinMap[resourcePath] = newPin
-            newPin
-        }
-        val seleniumResult = (this as JavascriptExecutor).executeScript(pin, *args)
-        val result = if (seleniumResult is List<*>) {
-            // Selenium converts an array to a list automagically. Convert it back to avoid runtime type errors: 
-            seleniumResult.toTypedArray()
-        } else {
-            seleniumResult
-        }
+        val pin = getPinForBlock(block.source)
+        val seleniumResult = (this as JavascriptExecutor).executeScript(pin)
         @Suppress("UNCHECKED_CAST")
-        return result as T
+        return seleniumResult as R
+    }
+
+    fun <T, R> WebDriver.executeKtJs(arg1: T, block: CapturedBlock1<T, R>): R {
+        @Suppress("ConstantConditionIf")
+        if (false) { // Catch type issues
+            block(arg1)
+        }
+
+        val pin = getPinForBlock(block.source)
+        val seleniumResult = (this as JavascriptExecutor).executeScript(pin, arg1)
+        @Suppress("UNCHECKED_CAST")
+        return seleniumResult as R
     }
 
     @Test
     fun readColumnTexts(): Unit = ChromeDriver(ChromeOptions().addArguments("--headless=new")).runAndQuit {
         (1..10).map {
             listOf(
-                "KtJs comparable" to assertAndMeasure { cells ->
-                    executeKtJs(cells) { (e) ->
-                        (e as Array<org.w3c.dom.Element>)
-                            .map { it.textContent }
-                            .toTypedArray()
-                    }.toList()
-                },
+                "KtJs comparable" to assertAndMeasure { cells -> //                     <^-code outside is executed in the JVM world
+                    executeKtJs(cells) { e -> //                                       vvv-code inside this block is executed in the JS world
+                        e.map { it.asNode().textContent ?: "" }
+                    } //                                                               ^^^-code inside this block is executed in the JS world
+                }, //                                                                   <V-code outside is executed in the JVM world
 
-                "KtJs optimal" to assertAndMeasure { _ ->
-                    executeKtJs { _ ->
+                "KtJs optimal" to assertAndMeasure { _ -> //                      <^-code outside is executed in the JVM world
+                    executeKtJs { //                                             vvv-code inside this block is executed in the JS world
                         kotlinx.browser.document.querySelectorAll(".column-15")
                             .asList()
-                            .map { it.textContent }
-                            .toTypedArray()
-                    }.toList()
-                },
+                            .map { it.textContent ?: "" }
+                    } //                                                         ^^^-code inside this block is executed in the JS world
+                }, //                                                             <V-code outside is executed in the JVM world
 
                 "Selenium comparable" to assertAndMeasure { cells ->
                     cells.map { it.getDomProperty("textContent") }
@@ -137,5 +126,39 @@ class SeleniumDemoTests {
         block()
     } finally {
         quit()
+    }
+
+    private fun WebDriver.getPinForBlock(source: Source): ScriptKey {
+        val resourcePath = source.resourcePath.apply {
+            require(isNotEmpty()) { "Failed to find compiled source for the fragment" }
+        }
+
+        this as JavascriptExecutor
+        var pin = scriptToPinMap[resourcePath]
+        pin = if (pin != null && pin in pinnedScripts) {
+            pin
+        } else {
+            println("NOTE: Script $resourcePath is not pinned yet")
+            val moduleJs = this@SeleniumDemoTests::class.java.getResourceAsStream(resourcePath)
+                .run {
+                    requireNotNull(this) { "Failed to read the compiled fragment $resourcePath" }
+                }
+                .bufferedReader()
+                .use {
+                    it.readText()
+                }
+            val fragmentName = resourcePath.removeSuffix(".js")
+            @Language("JavaScript") val runnableJs = """
+                            const e = {};
+                            (function () { $moduleJs }).call(e);
+                            const entryModule = e["$fragmentName"];
+                            return entryModule.entrypoint.apply(entryModule, arguments)
+                        """.trimIndent()
+
+            val newPin: ScriptKey = (this as JavascriptExecutor).pin(runnableJs)
+            scriptToPinMap[resourcePath] = newPin
+            newPin
+        }
+        return pin
     }
 }
