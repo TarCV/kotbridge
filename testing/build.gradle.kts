@@ -21,7 +21,7 @@ application {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.12.1")
     testImplementation("com.microsoft.playwright:playwright:1.38.0")
 }
