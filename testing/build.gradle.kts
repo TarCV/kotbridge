@@ -106,6 +106,7 @@ sourceSets.forEach { set ->
                         extensions.configure(KotlinMultiplatformExtension::class) {
                             js(IR) {
                                 sourceSets.named("jsMain") {
+                                    kotlin.srcDir("${'$'}projectDir/../../../../../../../src/test/ktJs")
                                     kotlin.srcDir("src")
                                 }
                                 browser {
