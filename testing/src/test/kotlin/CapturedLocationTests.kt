@@ -1,4 +1,4 @@
-import io.koalaql.kapshot.CapturedBlock
+import com.github.tarcv.kotbridge.CapturedBlock
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -14,11 +14,11 @@ class CapturedLocationTests {
         assertEquals("2 + 2", block.source.text)
         assertEquals("src/test/kotlin/CapturedLocationTests.kt", location.path)
 
-        assertEquals(223, location.from.char)
+        assertEquals(231, location.from.char)
         assertEquals(12, location.from.column)
         assertEquals(8, location.from.line)
 
-        assertEquals(228, location.to.char)
+        assertEquals(236, location.to.char)
         assertEquals(17, location.to.column)
         assertEquals(8, location.to.line)
     }
@@ -34,11 +34,11 @@ class CapturedLocationTests {
         assertEquals("", block.source.text)
         assertEquals("src/test/kotlin/CapturedLocationTests.kt", location.path)
 
-        assertEquals(763, location.from.char)
+        assertEquals(771, location.from.char)
         assertEquals(35, location.from.column)
         assertEquals(27, location.from.line)
 
-        assertEquals(763, location.to.char)
+        assertEquals(771, location.to.char)
         assertEquals(35, location.to.column)
         assertEquals(27, location.to.line)
     }
@@ -52,11 +52,11 @@ class CapturedLocationTests {
         assertEquals("", block.source.text)
         assertEquals("src/test/kotlin/CapturedLocationTests.kt", location.path)
 
-        assertEquals(1303, location.from.char)
+        assertEquals(1311, location.from.char)
         assertEquals(35, location.from.column)
         assertEquals(47, location.from.line)
 
-        assertEquals(1303, location.to.char)
+        assertEquals(1311, location.to.char)
         assertEquals(35, location.to.column)
         assertEquals(47, location.to.line)
     }

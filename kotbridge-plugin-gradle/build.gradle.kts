@@ -20,13 +20,13 @@ gradlePlugin {
     vcsUrl.set("https://github.com/mfwgenerics/kapshot.git")
 
     plugins {
-        create("kapshotPlugin") {
-            id = "io.koalaql.kapshot-plugin"
-            displayName = "Kapshot Plugin"
-            description = "Kotlin Compiler Plugin for source capture in closure blocks"
-            implementationClass = "io.koalaql.kapshot.GradlePlugin"
+        create("kotbridgePlugin") {
+            id = "com.github.tarcv.kotbridge-plugin"
+            displayName = "Kotbridge Plugin"
+            description = "Kotlin Compiler Plugin for compiling source fragments as Kotlin/JS"
+            implementationClass = "com.github.tarcv.kotbridge.GradlePlugin"
 
-            tags.set(listOf("kotlin", "kapshot", "jvm"))
+            tags.set(listOf("kotlin", "kotbridge", "jvm"))
         }
     }
 }

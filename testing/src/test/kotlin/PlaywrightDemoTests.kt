@@ -4,9 +4,9 @@ import com.microsoft.playwright.ElementHandle
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
-import io.koalaql.kapshot.Capturable
-import io.koalaql.kapshot.Converters
-import io.koalaql.kapshot.Source
+import com.github.tarcv.kotbridge.Capturable
+import com.github.tarcv.kotbridge.Converters
+import com.github.tarcv.kotbridge.Source
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
 import org.w3c.dom.asList

@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.incremental.createDirectory
 import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 
 plugins {
-    id("io.koalaql.kapshot-plugin")
+    id("com.github.tarcv.kotbridge-plugin")
 
     kotlin("jvm")
 

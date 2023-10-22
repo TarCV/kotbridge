@@ -1,4 +1,4 @@
-package io.koalaql.kapshot
+package com.github.tarcv.kotbridge
 
 import kotlin.reflect.*
 

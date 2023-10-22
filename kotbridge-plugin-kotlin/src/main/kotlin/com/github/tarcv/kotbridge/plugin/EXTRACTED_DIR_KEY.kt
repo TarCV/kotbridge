@@ -1,4 +1,4 @@
-package io.koalaql.kapshot.plugin
+package com.github.tarcv.kotbridge.plugin
 
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 

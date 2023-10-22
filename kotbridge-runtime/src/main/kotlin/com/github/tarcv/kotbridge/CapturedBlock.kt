@@ -1,4 +1,4 @@
-package io.koalaql.kapshot
+package com.github.tarcv.kotbridge
 
 fun interface CapturedBlock<T>: Capturable<CapturedBlock<T>> {
     operator fun invoke(): T

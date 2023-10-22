@@ -1,6 +1,6 @@
-import io.koalaql.kapshot.Capturable
-import io.koalaql.kapshot.CapturedBlock
-import io.koalaql.kapshot.Source
+import com.github.tarcv.kotbridge.Capturable
+import com.github.tarcv.kotbridge.CapturedBlock
+import com.github.tarcv.kotbridge.Source
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.resume

@@ -1,4 +1,4 @@
-package io.koalaql.kapshot
+package com.github.tarcv.kotbridge
 
 interface Capturable<T : Capturable<T>> {
     val source: Source get() = error("there is no source code for this block")

@@ -1,4 +1,4 @@
-package io.koalaql.kapshot.plugin
+package com.github.tarcv.kotbridge.plugin
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -17,7 +17,7 @@ class GenerationExtension(
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val addSourceToBlock = pluginContext
             .referenceFunctions(CallableId(
-                packageName = FqName("io.koalaql.kapshot"),
+                packageName = FqName("com.github.tarcv.kotbridge"),
                 callableName = Name.identifier("addSourceToBlock")
             ))
             .first()

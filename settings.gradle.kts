@@ -1,9 +1,8 @@
 pluginManagement {
-    includeBuild("kapshot-plugin-gradle")
+    includeBuild("kotbridge-plugin-gradle")
 }
 
-includeBuild("kapshot-runtime")
-includeBuild("kapshot-plugin-kotlin")
+includeBuild("kotbridge-runtime")
+includeBuild("kotbridge-plugin-kotlin")
 
 include("testing")
-include("readme")

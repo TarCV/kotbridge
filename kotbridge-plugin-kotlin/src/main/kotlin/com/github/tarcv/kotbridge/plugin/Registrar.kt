@@ -1,4 +1,4 @@
-package io.koalaql.kapshot.plugin
+package com.github.tarcv.kotbridge.plugin
 
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension

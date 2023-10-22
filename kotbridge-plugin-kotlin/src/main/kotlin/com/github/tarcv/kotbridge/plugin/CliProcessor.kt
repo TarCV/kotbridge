@@ -1,4 +1,4 @@
-package io.koalaql.kapshot.plugin
+package com.github.tarcv.kotbridge.plugin
 
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 @AutoService(CommandLineProcessor::class)
 @OptIn(ExperimentalCompilerApi::class)
 class CliProcessor: CommandLineProcessor {
-    override val pluginId: String = "io.koalaql.kapshot-plugin"
+    override val pluginId: String = "com.github.tarcv.kotbridge-plugin"
 
     override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(

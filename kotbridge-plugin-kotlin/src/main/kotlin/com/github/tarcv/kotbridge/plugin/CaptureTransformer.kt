@@ -1,4 +1,4 @@
-package io.koalaql.kapshot.plugin
+package com.github.tarcv.kotbridge.plugin
 
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -47,9 +47,9 @@ class CaptureTransformer(
     private val projectDir: Path,
     private val extractedTargetDir: Path,
     private val addSourceToBlock: IrSimpleFunctionSymbol,
-    private val capturableFqn: String = "io.koalaql.kapshot.Capturable",
-    private val captureSourceFqn: String = "io.koalaql.kapshot.CaptureSource",
-    private val converterInfoFqn: String = "io.koalaql.kapshot.Converters"
+    private val capturableFqn: String = "com.github.tarcv.kotbridge.Capturable",
+    private val captureSourceFqn: String = "com.github.tarcv.kotbridge.CaptureSource",
+    private val converterInfoFqn: String = "com.github.tarcv.kotbridge.Converters"
 ): IrElementTransformerVoidWithContext() {
 
     private fun currentFileText(): String {

@@ -1,4 +1,4 @@
-package io.koalaql.kapshot
+package com.github.tarcv.kotbridge
 
 fun parseLocation(location: String): SourceLocation {
     fun parseOffset(offset: String): SourceOffset = offset
