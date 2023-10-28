@@ -12,7 +12,7 @@ plugins {
 
 val gitVersion: groovy.lang.Closure<*> by extra
 
-group = "io.koalaql"
+group = "com.github.tarcv"
 version = gitVersion()
 
 check("$version".isNotBlank() && version != "unspecified")

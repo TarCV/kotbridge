@@ -1,5 +1,5 @@
-import io.koalaql.kapshot.CaptureSource
-import io.koalaql.kapshot.sourceOf
+import com.github.tarcv.kotbridge.CaptureSource
+import com.github.tarcv.kotbridge.sourceOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,11 +36,11 @@ class CaptureSourceTests {
 
         assertEquals("src/test/kotlin/CaptureSourceTests.kt", location.path)
 
-        assertEquals(182, location.from.char)
+        assertEquals(198, location.from.char)
         assertEquals(7, location.from.line)
         assertEquals(4, location.from.column)
 
-        assertEquals(329, location.to.char)
+        assertEquals(345, location.to.char)
         assertEquals(14, location.to.line)
         assertEquals(5, location.to.column)
 

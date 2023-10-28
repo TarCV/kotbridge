@@ -1,5 +1,5 @@
 import com.microsoft.playwright.ElementHandle
-import io.koalaql.kapshot.KtJsNoImport
+import com.github.tarcv.kotbridge.KtJsNoImport
 import org.openqa.selenium.WebElement
 import org.w3c.dom.Node
 

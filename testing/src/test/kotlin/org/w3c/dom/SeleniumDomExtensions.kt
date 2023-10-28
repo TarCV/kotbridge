@@ -5,7 +5,7 @@
 )
 package org.w3c.dom
 
-import io.koalaql.kapshot.KtJsNoImport
+import com.github.tarcv.kotbridge.KtJsNoImport
 
 // Stubs of kt/js only APIs
 
