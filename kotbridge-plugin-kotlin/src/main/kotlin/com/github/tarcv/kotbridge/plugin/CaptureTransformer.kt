@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.common.sourceElement
-import org.jetbrains.kotlin.backend.jvm.ir.getValueArgument
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
@@ -28,7 +27,6 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
 import org.jetbrains.kotlin.js.descriptorUtils.getKotlinTypeFqName
-import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.checker.SimpleClassicTypeSystemContext.isNullableType
 import java.io.File
 import java.math.BigInteger
@@ -248,11 +246,16 @@ class CaptureTransformer(
                         it.symbol.owner.constructedClass.kotlinFqName.asString() == converterInfoFqn
                     }
                     ?: return@foldRight acc
+                val argumentIndeces = annotation.symbol.owner.valueParameters
+                    .mapIndexed { index, parameter -> parameter.name.asString() to index }
+                    .toMap()
                 RequestedConverters(
-                    annotation.getValueArgument(Name.identifier("fromJsConverter"))
+                    argumentIndeces["fromJsConverter"]
+                        ?.let { index -> annotation.getValueArgument(index) }
                         ?.asAnnotationArgumentValueAsString(converterInfoFqn)
                         ?: acc.fromJs,
-                    annotation.getValueArgument(Name.identifier("toJsConverter"))
+                    argumentIndeces["toJsConverter"]
+                        ?.let { index -> annotation.getValueArgument(index) }
                         ?.asAnnotationArgumentValueAsString(converterInfoFqn)
                         ?: acc.toJs
                 )
