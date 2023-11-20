@@ -4,7 +4,7 @@ plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "1.1.0"
 
-    id("com.github.gmazzo.buildconfig") version "3.1.0"
+    id("com.github.gmazzo.buildconfig") version "4.2.0"
 }
 
 buildConfig {
