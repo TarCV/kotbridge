@@ -179,7 +179,7 @@ sourceSets.forEach { set ->
         }
     }
 
-    tasks.register("ktJsFragments${capitalizedSetName}Build", Exec::class) {
+    tasks.register("ktJsFragments${capitalizedSetName}Build", GradleBuild::class) {
         val upstreamTask = tasks.named("ktJsFragments${capitalizedSetName}PrepareProject")
         val compiledFiles = upstreamTask.map { task -> task.inputs.files }
         val compilingProjectDir = upstreamTask.map { task -> task.outputs.files.singleFile }
@@ -196,8 +196,12 @@ sourceSets.forEach { set ->
                 .get()
         }
 
-        commandLine("${rootDir}/gradlew", ":allJsBrowserProductionWebpack")
-        workingDir(compilingProjectDir)
+        startParameter = gradle.startParameter
+            .newBuild()
+            .apply {
+                setTaskNames(listOf(":allJsBrowserProductionWebpack"))
+            }
+        dir = compilingProjectDir
     }
     set.resources.srcDir(
         tasks.named("ktJsFragments${capitalizedSetName}Build")

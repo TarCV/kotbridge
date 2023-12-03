@@ -1,7 +1,7 @@
 plugins {
     id("conventions")
 
-    id("java-gradle-plugin")
+    `kotlin-dsl`
     id("com.gradle.plugin-publish") version "1.1.0"
 
     id("com.github.gmazzo.buildconfig") version "3.1.0"
@@ -12,12 +12,12 @@ buildConfig {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin-api"))
+    implementation(kotlin("gradle-plugin"))
 }
 
 gradlePlugin {
-    website.set("https://github.com/mfwgenerics/kapshot")
-    vcsUrl.set("https://github.com/mfwgenerics/kapshot.git")
+    website.set("https://github.com/TarCV/kotbridge")
+    vcsUrl.set("https://github.com/TarCV/kotbridge.git")
 
     plugins {
         create("kotbridgePlugin") {
