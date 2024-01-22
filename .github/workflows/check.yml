@@ -17,7 +17,7 @@ jobs:
         run: |
           google-chrome --version > chrome_version
       - name: Cache Selenium drivers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-${{ hashFiles('chrome_version') }}-selenium-driver
           path: |
